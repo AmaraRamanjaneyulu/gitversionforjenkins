@@ -1,0 +1,40 @@
+<h3>BUILD ${build.result}</h3>
+<table>
+  <tr><td>URL</td><td><a href="${build.absoluteUrl}">${build.absoluteUrl}</a></td></tr>
+  <tr><td>Project:</td><td>${project.name}</td></tr>
+  <tr><td>Date:</td><td>${it.timestampString}</td></tr>
+  <tr><td>Duration:</td><td>${build.durationString}</td></tr>
+  <tr><td>Cause:</td><td><% build.causes.each() { cause -> %> ${cause.shortDescription} <%  } %></td></tr>
+</table>
+<br />
+
+
+<!-- CHANGE SET -->
+<% def changeSet = build.changeSets
+if(changeSet != null) {
+  def hadChanges = false %>
+  <h3>Changes</h3>
+  <table>
+<%  changeSet.each() { cs ->
+    hadChanges = true %>
+      <tr>
+        <td colspan="2" class="bg2">&nbsp;&nbsp;Revision <strong><%= cs.metaClass.hasProperty('commitId') ? cs.commitId : cs.metaClass.hasProperty('revision') ? cs.revision :
+        cs.metaClass.hasProperty('changeNumber') ? cs.changeNumber : "" %></strong> by
+          <strong><%= cs.author %>: </strong>
+          <strong>(${cs.msgAnnotated})</strong>
+         </td>
+      </tr>
+<%    cs.affectedFiles.each() { p -> %>
+        <tr>
+          <td width="10%">&nbsp;&nbsp;${p.editType.name}</td>
+          <td>${p.path}</td>
+        </tr>
+<%    }
+  }
+
+  if(!hadChanges) { %>
+        <tr><td colspan="2">No Changes</td></tr>
+<%  } %>
+  </table>
+<br />
+<% } %>
